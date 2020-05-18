@@ -29,7 +29,7 @@ Mat yours::getFourierDescriptor(const Mat& contour) {
     // convert to flaot
     contour.convertTo(contourF, CV_32F);
 
-    // prepare output matrices ( one for magbitude and the other for phase)
+    // prepare output matrices ( one for magnitude and the other for phase)
     Mat planes[] = {Mat::zeros(contourF.size(), CV_32F), Mat::zeros(contourF.size(), CV_32F)};
     Mat complexI;
     merge(planes, 2, complexI);
@@ -59,7 +59,7 @@ Mat yours::normalizeFourierDescriptor(const Mat& fd, int n) {
     // What if |F(1)| = 0?
     int scalarInd = 0;
     
-    // in case F(0) is zero choose the nth component F(n), but what if F9n) is also zero ?
+    // in case F(0) is zero choose the nth component F(n), but what if F(n) is also zero ?
     if(magnitued.at<int>(scalarInd,0) == 0){ 
         scalarInd = n - 1;
     }
@@ -67,7 +67,6 @@ Mat yours::normalizeFourierDescriptor(const Mat& fd, int n) {
     float scalar = 1.0f / abs(magnitued.at<float>(scalarInd,0));
     Mat scaleInv = magnitued * scalar;
 
-    std::cout<< scaleInv << std::endl;
 
     // smaller sensitivity for details
     // This one is a bit tricky. How does your descriptor look like?

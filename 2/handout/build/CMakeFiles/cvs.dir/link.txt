@@ -1,0 +1,2 @@
+/Library/Developer/CommandLineTools/usr/bin/ar qc libcvs.a  CMakeFiles/cvs.dir/src/yours.cpp.o
+/Library/Developer/CommandLineTools/usr/bin/ranlib libcvs.a
