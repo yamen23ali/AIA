@@ -1,0 +1,7 @@
+/Users/d070867/Desktop/uni/Subjects/AIA/AIA/3/handout/build/CMakeFiles/rebuild_cache.dir
+/Users/d070867/Desktop/uni/Subjects/AIA/AIA/3/handout/build/CMakeFiles/edit_cache.dir
+/Users/d070867/Desktop/uni/Subjects/AIA/AIA/3/handout/build/CMakeFiles/test_app.dir
+/Users/d070867/Desktop/uni/Subjects/AIA/AIA/3/handout/build/CMakeFiles/app.dir
+/Users/d070867/Desktop/uni/Subjects/AIA/AIA/3/handout/build/CMakeFiles/catch_main.dir
+/Users/d070867/Desktop/uni/Subjects/AIA/AIA/3/handout/build/CMakeFiles/cvs.dir
+/Users/d070867/Desktop/uni/Subjects/AIA/AIA/3/handout/build/CMakeFiles/cvt.dir

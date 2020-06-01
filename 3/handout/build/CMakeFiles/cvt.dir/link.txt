@@ -1,0 +1,2 @@
+/usr/bin/ar qc libcvt.a  CMakeFiles/cvt.dir/src/given.cpp.o
+/usr/bin/ranlib libcvt.a
