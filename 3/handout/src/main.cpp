@@ -44,14 +44,14 @@ int main(int argc, char** argv) {
     //given::showImage(queryImage, "queryImage", 0);
 
     // define parameters ------------------------------------------------------
-    double sigma            = 0.4;        // standard deviation of directional gradient kernel
-    double templateThresh   = -0.9;      // relative threshold for binarization of the template image
-    double objThresh        = -0.9;        // relative threshold for maxima in hough space
+    double sigma            = 1.0;        // standard deviation of directional gradient kernel
+    double templateThresh   = 0.4;      // relative threshold for binarization of the template image
+    double objThresh        = 0.8;         // relative threshold for maxima in hough space
     double scaleSteps       = 5;        // scale resolution in terms of number of scales to be investigated
     double scaleRange[2];               // scale of angles [min, max]
     scaleRange[0]           = 0.5;
-    scaleRange[1]           = 2;
-    double angleSteps       = 12;        // angle resolution in terms of number of angles to be investigated
+    scaleRange[1]           = 2.5;
+    double angleSteps       = 4;       // angle resolution in terms of number of angles to be investigated
     double angleRange[2];               // range of angles [min, max)
     angleRange[0]           = 0;
     angleRange[1]           = 2*CV_PI;
@@ -64,13 +64,13 @@ int main(int argc, char** argv) {
     app(templateImage, queryImage, objList, params);
 
     // print found objects on screen
-    // cout << "Number of objects: " << objList.size() << endl;
-    // int i=0;
-    // for(vector<Scalar>::iterator it = objList.begin(); it != objList.end(); it++, i++){
-    //     cout << i << "\tScale:\t" << (scaleRange[1] - scaleRange[0])/(scaleSteps-1)*(*it).val[0] + scaleRange[0];
-    //     cout << "\tAngle:\t" << ((angleRange[1] - angleRange[0])/(angleSteps)*(*it).val[1] + angleRange[0])/CV_PI*180;
-    //     cout << "\tPosition:\t(" << (*it).val[2] << ", " << (*it).val[3] << " )" << endl;
-    // }
+    cout << "Number of objects: " << objList.size() << endl;
+    int i=0;
+    for(vector<Scalar>::iterator it = objList.begin(); it != objList.end(); it++, i++){
+         cout << i << "\tScale:\t" << (scaleRange[1] - scaleRange[0])/(scaleSteps-1)*(*it).val[0] + scaleRange[0];
+         cout << "\tAngle:\t" << ((angleRange[1] - angleRange[0])/(angleSteps)*(*it).val[1] + angleRange[0])/CV_PI*180;
+         cout << "\tPosition:\t(" << (*it).val[2] << ", " << (*it).val[3] << " )" << endl;
+    }
 
     return 0;
 }
