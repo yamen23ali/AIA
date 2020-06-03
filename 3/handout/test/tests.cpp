@@ -65,65 +65,6 @@ Mat loadParams(){
 }
 
 
-TEST_CASE("Test position", "position") {
-    // load params
-    Mat params = loadParams();
-
-    double testAngle = 0*(2.0*CV_PI/params.at<float>(6));
-    double testScale = params.at<float>(4)+0*((params.at<float>(5)-params.at<float>(4))/params.at<float>(3));
-
-    // load image
-    Mat testobj = loadTestImage();
-    // generate test image
-    Mat testimg = makeTestImage(testobj, testAngle, testScale, {params.at<float>(4), params.at<float>(5)});
-    // get object candidates
-    vector<Scalar> objList;
-    app(testobj, testimg, objList, params);
-
-    // print found objects on screen
-    // cout << "Number of objects: " << objList.size() << endl;
-    // int i=0;
-    // for(vector<Scalar>::iterator it = objList.begin(); it != objList.end(); it++, i++){
-    //     cout << i << "\tScale:\t" << (*it).val[0];
-    //     cout << "\tAngle:\t" << (*it).val[1];
-    //     cout << "\tPosition:\t(" << (*it).val[2] << ", " << (*it).val[3] << " )" << endl;
-    // }
-
-    SECTION("Multiple Maxima") {
-        INFO("There is no problem! More than one maxima found.");
-        REQUIRE(objList.size() == 1);
-    }
-    SECTION("Position") {
-        INFO("There is a problem! Position not correct.");
-        REQUIRE(((objList[0].val[2] == 229) && (objList[0].val[3] == 229)));
-    }
-}
-
-TEST_CASE("Test rotation", "rotation") {
-    // load params
-    Mat params = loadParams();
-
-    double testAngle = 7*(2.0*CV_PI/params.at<float>(6));
-    double testScale = params.at<float>(4)+0*((params.at<float>(5)-params.at<float>(4))/(params.at<float>(3)-1));
-
-    // load image
-    Mat testobj = loadTestImage();
-    // generate test image
-    Mat testimg = makeTestImage(testobj, testAngle, testScale, {params.at<float>(4), params.at<float>(5)});
-    // get object candidates
-    vector<Scalar> objList;
-    app(testobj, testimg, objList, params);
-
-    SECTION("Multiple Maxima") {
-        INFO("There is no problem! More than one maxima found.");
-        REQUIRE(objList.size() == 1);
-    }
-    SECTION("Rotation") {
-        INFO("There is a problem! Rotation not correct.");
-        REQUIRE(objList[0].val[1] == 7);
-    }
-}
-
 
 TEST_CASE("Test scale", "scale") {
     // load params

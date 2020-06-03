@@ -9,7 +9,6 @@ using namespace cv;
 
 namespace yours {
 
-Mat toFreqDomain(Mat& image);
 void drawz(Mat &image);
 
 // shows hough space, eg. as a projection of angle- and scale-dimensions down to a single image

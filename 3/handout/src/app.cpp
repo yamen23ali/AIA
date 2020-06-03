@@ -38,9 +38,8 @@ void app(Mat& templateImage, Mat& queryImage, vector<Scalar>& objList, Mat& para
     Mat binTempl = yours::binarizeGradientImage(gradTempl, templateThresh);
     vector<Mat> templ = {binTempl, gradTempl};
 
-    //Mat fftMask = Mat(gradImage.rows, gradImage.cols, gradImage.type());
-    //yours::makeFFTObjectMask(templ, 1.0, 1.5, fftMask);
-    //yours::drawz(gradImage);
+    //Mat fftMask = Mat::zeros(gradImage.rows, gradImage.cols, gradImage.type());
+    //yours::makeFFTObjectMask(templ, 1.7, 3.14159, fftMask);
 
     // show binary image
     //given::showImage(templ[0], "Binary part of template", 0);
@@ -58,8 +57,8 @@ void app(Mat& templateImage, Mat& queryImage, vector<Scalar>& objList, Mat& para
     given::findHoughMaxima(houghSpace, objThresh, objList);
 
     // plot final detection result
-    //Mat result = given::visualizeResult(templ[0], queryImage, objList, scaleSteps, scaleRange, angleSteps, angleRange);
+    Mat result = given::visualizeResult(templ[0], queryImage, objList, scaleSteps, scaleRange, angleSteps, angleRange);
     // showImage(result, "result", 0);
-    //imwrite("result.png", result);
+    imwrite("result.png", result);
 
 }
