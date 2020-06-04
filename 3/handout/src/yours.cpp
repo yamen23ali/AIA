@@ -7,66 +7,75 @@ Mat yours::visualizeHoughSpace(vector< vector<Mat> >& houghSpace){
 
 }
 
+
+
 void yours::drawz(Mat &image){
 
 	vector<Mat> channels;
 	split(image, channels);
 	given::showImage(channels[0], "Binary part of template", 0);
-	given::showImage(channels[1], "Binary part of template", 0);
+	//given::showImage(channels[1], "Binary part of template", 0);
+	//std::cout<< channels[1] << std::endl;
+	//given::showImage(channels[1], "Binary part of template", 0);
 
+}
+
+Mat myDFT(Mat src){
+	Mat contourF;
+    // convert to flaot
+    src.convertTo(contourF, CV_32F);
+
+    // prepare output matrices ( one for magnitude and the other for phase)
+    Mat planes[] = {Mat::zeros(contourF.size(), CV_32F), Mat::zeros(contourF.size(), CV_32F)};
+    Mat complexI;
+    merge(planes, 2, complexI);
+
+    // perform DFT
+    dft(contourF, complexI);
+    
+    return complexI;
 }
 
 void yours::makeFFTObjectMask(vector<Mat>& templ, double scale, double angle, Mat& fftMask){
 
-	Mat filter, spectrum, scaledAndRotatedFilter, normalisedFilter, centeredFilter;
-
-	//Get object filter
-	vector<Mat> channels;
-	split(templ[1], channels);
-
-	//given::showImage(templ[0], "Binary part of template", 0);
-	//given::showImage(channels[1], "Binary part of template", 0);
-	
-	//channels[0] = templ[0].mul(channels[0]);
-	//channels[1] = templ[0].mul(channels[1]);
-
-	//given::showImage(channels[0], "Binary part of template", 0);
-	//given::showImage(channels[1], "Binary part of template", 0);
-    
-    merge(channels, filter);
-
+	Mat filter, centeredFilter;
 
 	// Scale and rotate object filter
-	scaledAndRotatedFilter = given::rotateAndScale(filter, angle, scale);
-
-	drawz(scaledAndRotatedFilter);
+	Mat scaledAndRotatedBinary = given::rotateAndScale(templ[0], angle, scale);
+	Mat scaledAndRotatedGrad = given::rotateAndScale(templ[1], angle, scale);
 	
-	// Normalise object filter
-    split(scaledAndRotatedFilter, channels);
+	// Normalize
+	Mat normalisedGrad;
+	
+	vector<Mat> gradChannels;
+	split(scaledAndRotatedGrad, gradChannels);
 
-    normalisedFilter = scaledAndRotatedFilter  * 1/cv::sum(channels[0])[0];
+	normalisedGrad = scaledAndRotatedGrad  * 1/cv::sum( gradChannels[0] )[0];
 
-    
+	// Make filter
+	vector<Mat> normalisedGradChannels;
+	split(normalisedGrad, normalisedGradChannels);
+
+	normalisedGradChannels[0] = scaledAndRotatedBinary.mul(normalisedGradChannels[0]);
+	normalisedGradChannels[1] = scaledAndRotatedBinary.mul(normalisedGradChannels[1]);
+	merge(normalisedGradChannels, filter);
 
     // Center object filter
-    int dx = -normalisedFilter.cols/2;
-	int dy = -normalisedFilter.rows/2;
+    int dx = -filter.cols/2;
+	int dy = -filter.rows/2;
 
-	int cols = normalisedFilter.cols;
-	int rows = normalisedFilter.rows;
+	int cols = filter.cols;
+	int rows = filter.rows;
 
 
-	if(rows > fftMask.rows){
-		rows = fftMask.rows;
-	}
-	if(cols > fftMask.cols){
-		cols = fftMask.cols;
+	if(rows > fftMask.rows || cols > fftMask.cols){
+		dft(fftMask, fftMask);
+		return;
 	}
 
-    normalisedFilter(Rect(0, 0, cols, rows)).copyTo(fftMask(Rect(0, 0, cols, rows)));
-    given::circShift(fftMask, centeredFilter, 0, 0);
-
-    //drawz(centeredFilter);
+    filter.copyTo(fftMask(Rect(0, 0, cols, rows)));
+    //drawz(fftMask);
+    given::circShift(fftMask, centeredFilter, dx, dy);
     
     dft(centeredFilter, fftMask);
 }
@@ -76,51 +85,49 @@ vector<vector<Mat> > yours::generalHough(Mat& gradImage, vector<Mat>& templ, dou
 
 	vector<vector<Mat>> votes;
 
-	double scaleStepSize = ((scaleRange[1] - scaleRange[0]) + 1 )/ scaleSteps;
-	double angleStepSize = (angleRange[1] - angleRange[0])/ angleSteps;
+	double scaleStepSize = (scaleRange[1] - scaleRange[0])/(scaleSteps-1);
+	double angleStepSize = (angleRange[1] - angleRange[0])/(angleSteps);
+	int i = 0 ;
 
-	std::cout << "=========================== Scale" << std::endl;
-	std::cout<< scaleSteps << std::endl;
-	std::cout<< scaleRange[0] << std::endl;
-	std::cout<< scaleRange[1] << std::endl;
-	std::cout<< scaleStepSize << std::endl;
+	Mat imageSpectrum;
+	dft(gradImage, imageSpectrum);
 
-
-	std::cout << "=========================== Angle" << std::endl;
-	
-	std::cout<< angleSteps << std::endl;
-	std::cout<< angleRange[0] << std::endl;
-	std::cout<< angleRange[1] << std::endl;
-	std::cout<< angleStepSize << std::endl;
-	std::cout << "===========================" << std::endl;
-
-	for(int i=0; i<= scaleSteps; i++){
+	while(i < scaleSteps){
+		
 		double scale = scaleRange[0] + i*scaleStepSize;
-		//std::cout<< scale << std::endl;
-
+		//double scale = 1.0;
 		vector<Mat> scaleVotes;
-
-		for(int j=0; j <= angleSteps; j++){
-			double angle = angleRange[0] + j*angleStepSize;
-			//std::cout<< angle << std::endl;
+		
+		int j = 0 ;
+		while(j <  angleSteps){
+			double angle = j*(angleRange[1]/angleSteps);
+			//double angle = 1.57;
 
 			Mat fftMask = Mat::zeros(gradImage.rows, gradImage.cols, gradImage.type());
-			//drawz(fftMask);
 			makeFFTObjectMask(templ, scale, angle, fftMask);
-			//drawz(fftMask);
-			
-			Mat imageSpectrum;
-			dft(gradImage, imageSpectrum);
 
-			Mat vote;
-			mulSpectrums(imageSpectrum, fftMask, vote, 0, true);
+			Mat voteSpec;
+			
+			mulSpectrums(imageSpectrum, fftMask , voteSpec, 0, true);
+
+			Mat vote,magnitued,angleMat;
+			dft(voteSpec, vote, cv::DFT_INVERSE);
+
+			std::vector<Mat> voteChannels(2);
+			split(vote, voteChannels);
+			cartToPolar(voteChannels[0], voteChannels[1], magnitued, angleMat);
+			
+			//drawz(magnitued);
 
 			vector<Mat> channels;
 			split(vote, channels);
-			channels[0] = cv::abs(channels[0]);
+			
 
-			scaleVotes.push_back(channels[0]);
+			scaleVotes.push_back(abs(magnitued));
+			//scaleVotes.push_back(abs(channels[1]));
+			j++;
 		}
+		i++;
 		votes.push_back(scaleVotes);
 	}
 
@@ -130,19 +137,55 @@ vector<vector<Mat> > yours::generalHough(Mat& gradImage, vector<Mat>& templ, dou
 
 Mat yours::binarizeGradientImage(Mat& src, double threshold){
 
-	Mat binaryImage;
+
+	std::vector<Mat> channels(2);
+    Mat magnitued;
+    Mat angle;
+    Mat binaryImage;
+
+    split(src, channels);
+    cartToPolar(channels[0], channels[1], magnitued, angle);
+
+    double min, max;
+    cv::minMaxLoc(magnitued, &min, &max);
+
+
+    cv::threshold(magnitued, binaryImage, threshold*max, 255, 3);
+
+
+    return binaryImage;
+
+
+
+	/*Mat binaryImage, tempCh0, tempCh1;
 	vector<Mat> channels;
+	vector<Mat> binaryChannels;
+	double min, max;
+	
 	split(src, channels);
 
-	channels[0] = cv::abs(channels[0]);
+	tempCh0 = abs(channels[0]);
+	tempCh1 = abs(channels[1]);
+	
+	cv::minMaxLoc(tempCh0, &min, &max);
+	cv::threshold(tempCh0, tempCh0, threshold*max, 255, 0);
+	binaryChannels.push_back(tempCh0);
 
-	double min, max;
-	cv::minMaxLoc(channels[0], &min, &max);
 
-	cv::threshold(channels[0], binaryImage, threshold*max, 0, 3);
+	cv::minMaxLoc(tempCh1, &min, &max);
+	cv::threshold(tempCh1, tempCh1, threshold*max, 255, 0);
+	binaryChannels.push_back(tempCh1);
+
+
+	merge(binaryChannels, binaryImage);
+
+	//yours::drawz(binaryImage);
+
+	//std::cout<< binaryImage << std::endl;
+
 
 	return binaryImage;
-	/*Mat binaryImage;
+	Mat binaryImage;
 
 	src = cv::abs(src);
 

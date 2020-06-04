@@ -191,9 +191,6 @@ void given::findHoughMaxima(vector< vector<Mat> >& houghSpace, double objThresh,
     double min, max;
     minMaxLoc(maxImage, &min, &max);
 
-    std::cout<< max << std::endl;
-    std::cout<< min << std::endl;
-
     // define threshold
     double threshold = objThresh * max;
 

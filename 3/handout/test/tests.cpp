@@ -66,12 +66,12 @@ Mat loadParams(){
 
 
 
-TEST_CASE("Test scale", "scale") {
+TEST_CASE("Test rotation", "rotation") {
     // load params
     Mat params = loadParams();
 
-    double testAngle = 0*(2.0*CV_PI/params.at<float>(6));
-    double testScale = params.at<float>(4)+3*((params.at<float>(5)-params.at<float>(4))/(params.at<float>(3)-1));
+    double testAngle = 7*(2.0*CV_PI/params.at<float>(6));
+    double testScale = params.at<float>(4)+0*((params.at<float>(5)-params.at<float>(4))/(params.at<float>(3)-1));
 
     // load image
     Mat testobj = loadTestImage();
@@ -85,10 +85,10 @@ TEST_CASE("Test scale", "scale") {
         INFO("There is no problem! More than one maxima found.");
         REQUIRE(objList.size() == 1);
     }
-    SECTION("Scale") {
-        INFO("There is a problem! Scale not correct.");
-        REQUIRE(objList[0].val[0] == 3);
+    SECTION("Rotation") {
+        INFO("There is a problem! Rotation not correct.");
+        REQUIRE(objList[0].val[1] == 7);
     }
-
-
 }
+
+

@@ -42,6 +42,7 @@ void app(Mat& templateImage, Mat& queryImage, vector<Scalar>& objList, Mat& para
     //yours::makeFFTObjectMask(templ, 1.7, 3.14159, fftMask);
 
     // show binary image
+    //yours::drawz(gradTempl);
     //given::showImage(templ[0], "Binary part of template", 0);
 
     // perfrom general hough transformation

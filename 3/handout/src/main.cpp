@@ -44,14 +44,14 @@ int main(int argc, char** argv) {
     //given::showImage(queryImage, "queryImage", 0);
 
     // define parameters ------------------------------------------------------
-    double sigma            = 1;        // standard deviation of directional gradient kernel
-    double templateThresh   = 0.7;      // relative threshold for binarization of the template image
-    double objThresh        = 0.85;         // relative threshold for maxima in hough space
+    double sigma            = 1.0;        // standard deviation of directional gradient kernel
+    double templateThresh   = 0.3;      // relative threshold for binarization of the template image
+    double objThresh        = 0.6;         // relative threshold for maxima in hough space
     double scaleSteps       = 5;        // scale resolution in terms of number of scales to be investigated
     double scaleRange[2];               // scale of angles [min, max]
-    scaleRange[0]           = 1;
-    scaleRange[1]           = 5;
-    double angleSteps       = 12;       // angle resolution in terms of number of angles to be investigated
+    scaleRange[0]           = 0.5;
+    scaleRange[1]           = 2.5;
+    double angleSteps       = 4;       // angle resolution in terms of number of angles to be investigated
     double angleRange[2];               // range of angles [min, max)
     angleRange[0]           = 0;
     angleRange[1]           = 2*CV_PI;
