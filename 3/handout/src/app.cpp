@@ -38,9 +38,6 @@ void app(Mat& templateImage, Mat& queryImage, vector<Scalar>& objList, Mat& para
     Mat binTempl = yours::binarizeGradientImage(gradTempl, templateThresh);
     vector<Mat> templ = {binTempl, gradTempl};
 
-    //Mat fftMask = Mat::zeros(gradImage.rows, gradImage.cols, gradImage.type());
-    //yours::makeFFTObjectMask(templ, 1.7, 3.14159, fftMask);
-
     // show binary image
     //yours::drawz(gradTempl);
     //given::showImage(templ[0], "Binary part of template", 0);
@@ -49,9 +46,9 @@ void app(Mat& templateImage, Mat& queryImage, vector<Scalar>& objList, Mat& para
     vector< vector<Mat> > houghSpace = yours::generalHough(gradImage, templ, scaleSteps, scaleRange, angleSteps, angleRange);
 
     // plot hough space (max over angle- and scale-dimension)
-    //Mat hough = yours::visualizeHoughSpace(houghSpace);
-    // given::showImage(hough, "hough space", 0);
-    //imwrite("hough_space.png", hough);
+    Mat hough = yours::visualizeHoughSpace(houghSpace);
+    //given::showImage(hough, "hough space", 0);
+    imwrite("hough_space.png", hough);
 
 
     // find maxima in hough space

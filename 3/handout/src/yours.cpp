@@ -4,19 +4,22 @@
 
 Mat yours::visualizeHoughSpace(vector< vector<Mat> >& houghSpace){
 
+	Mat firstImage = houghSpace.at(0).at(0);
+	Mat res = Mat::zeros(firstImage.rows, firstImage.cols, firstImage.type());
 
-}
+	for(int i = 0; i < houghSpace.size(); i++){
+        for(int j = 0; j < houghSpace.at(i).size(); j++){
+            cv::add(res, houghSpace.at(i).at(j), res);
+        }
+    }
+    
+    cv::normalize(res, res, 0, 255, cv::NORM_MINMAX);
+    res.convertTo(res, CV_8U);
+    
+    Mat heatMap;
+    applyColorMap(res, heatMap, COLORMAP_HOT);
 
-
-void yours::drawz(Mat &image){
-
-	vector<Mat> channels;
-	split(image, channels);
-	given::showImage(channels[0], "Binary part of template", 0);
-	given::showImage(channels[1], "Binary part of template", 0);
-	//std::cout<< channels[1] << std::endl;
-	//given::showImage(channels[1], "Binary part of template", 0);
-
+    return heatMap;
 }
 
 void yours::makeFFTObjectMask(vector<Mat>& templ, double scale, double angle, Mat& fftMask){
@@ -96,6 +99,8 @@ vector<vector<Mat> > yours::generalHough(Mat& gradImage, vector<Mat>& templ, dou
 			split(vote, voteChannels);
 			cartToPolar(voteChannels[0], voteChannels[1], magnitued, angleMat);
 
+			//drawz(magnitued);
+
 			scaleVotes.push_back(magnitued);
 
 			j++;
@@ -127,3 +132,14 @@ Mat yours::binarizeGradientImage(Mat& src, double threshold){
 
     return binaryImage;
 }
+
+/*void yours::drawz(Mat &image){
+
+	vector<Mat> channels;
+	split(image, channels);
+	given::showImage(channels[0], "Binary part of template", 0);
+	//given::showImage(channels[1], "Binary part of template", 0);
+	//std::cout<< channels[1] << std::endl;
+	//given::showImage(channels[1], "Binary part of template", 0);
+
+}*/
